@@ -1,7 +1,7 @@
 [project]
 name = "rag-droit-du-travail"
 version = "0.1.0"
-description = "Add your description here"
+description = "RAG from scratch on French labor law, with retrieval evaluation"
 readme = "README.md"
 authors = [
     { name = "Mohamad EL HAJJ", email = "mhmdhajj01@gmail.com" }
