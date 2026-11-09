@@ -14,9 +14,12 @@ out_dir.mkdir(parents=True, exist_ok=True)
 
 found = set()
 for row in ds:
-    match = re.search(r"L\d{4}-\d+", row["ref"])
+    # Full article number, including sub-articles like L3141-5-1
+    match = re.search(r"L\d{4}-\d+(?:-\d+)*", row["ref"])
     if match and match.group() in WANTED:
         article_id = match.group()
+        if article_id in found:
+            raise ValueError(f"Duplicate row for {article_id}: {row['ref']}")
         text = f"Article {article_id} - Code du travail\n{row['texte']}"
         (out_dir / f"{article_id}.txt").write_text(text, encoding="utf-8")
         found.add(article_id)
