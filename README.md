@@ -42,6 +42,13 @@ Requires [uv](https://docs.astral.sh/uv/).
 uv sync
 ```
 
+The `data/` folder is not versioned. Rebuild it with:
+
+```bash
+uv run python src/build_raw_corpus.py   # downloads the articles into data/raw/
+uv run python src/build_corpus.py       # builds data/corpus.jsonl
+```
+
 ## Disclaimer
 
 This is a learning project. Its answers are not legal advice.
