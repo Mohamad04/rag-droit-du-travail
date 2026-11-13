@@ -7,13 +7,15 @@ from sentence_transformers import SentenceTransformer
 from build_chunks import load_corpus
 
 # --- Configuration ---
-MODEL_NAME = "intfloat/multilingual-e5-small"
+#MODEL_NAME = "intfloat/multilingual-e5-small" """Model v1"""
+MODEL_NAME = "intfloat/multilingual-e5-base" #Model v2
+MODEL_SHORT = MODEL_NAME.split("/")[-1] 
 STRATEGY = "v1"
 
 CHUNKS_PATH = Path(f"data/chunks_{STRATEGY}.jsonl")
 INDEX_DIR = Path("data/index")
-EMBEDDINGS_PATH = INDEX_DIR / f"embeddings_{STRATEGY}.npy"
-CHUNK_IDS_PATH = INDEX_DIR / f"chunk_ids_{STRATEGY}.json"
+EMBEDDINGS_PATH = INDEX_DIR / f"embeddings_{STRATEGY}_{MODEL_SHORT}.npy"
+CHUNK_IDS_PATH = INDEX_DIR / f"chunk_ids_{STRATEGY}_{MODEL_SHORT}.json"
 
 
 def main():

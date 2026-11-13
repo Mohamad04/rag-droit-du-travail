@@ -21,7 +21,7 @@ Understand every step of a RAG pipeline by implementing it myself, then measure 
 
 1. Corpus collection ✅
 2. Chunking (size and overlap studied as parameters): v1 done, other strategies to come
-3. Embeddings with `sentence-transformers` ✅ (`intfloat/multilingual-e5-small`)
+3. Embeddings with `sentence-transformers` ✅ (`multilingual-e5-small`, then `multilingual-e5-base`)
 4. Vector search: NumPy cosine similarity ✅, then FAISS
 5. Generation with a local LLM (Ollama), with source citations
 6. Evaluation: hit rate and MRR on the evaluation set ✅ (baseline recorded below)
@@ -41,7 +41,7 @@ Understand every step of a RAG pipeline by implementing it myself, then measure 
 Current configuration:
 
 - **Chunking v1:** one chunk per article, prefixed with `Article <id>:`.
-- **Embedding model:** `intfloat/multilingual-e5-small`, with the `passage: ` prefix for documents and `query: ` for questions, normalized embeddings.
+- **Embedding model:** `intfloat/multilingual-e5-base` (V2; V1 used `multilingual-e5-small`), with the `passage: ` prefix for documents and `query: ` for questions, normalized embeddings.
 - **Search:** cosine similarity (dot product of normalized vectors) over a NumPy matrix, top 5.
 
 ## Results
@@ -75,6 +75,37 @@ Observations (the known problems of V1):
 - Failures concentrate on vague or informal questions (q06, q07, q08) and the one English question (q09).
 - With only 20 articles, a top 5 already covers 25% of the corpus, so hit rate @5 is optimistic. Hit rate @1 and MRR are the more informative numbers.
 - With 11 scored questions, one question moves hit rate by about 9 points; treat differences between strategies cautiously.
+
+### V2 (better embedding model)
+
+Only the embedding model changes: `intfloat/multilingual-e5-small` becomes `intfloat/multilingual-e5-base`. Chunking (v1, one chunk per article), search and questions are identical, so the comparison isolates the model.
+
+| Metric | V1 (e5-small) | V2 (e5-base) |
+|--------|---------------|--------------|
+| Hit rate @1 | 0.545 | 0.455 |
+| Hit rate @3 | 0.727 | 0.909 |
+| Hit rate @5 | 0.818 | 0.909 |
+| MRR | 0.655 | 0.667 |
+
+Questions where the expected article was not ranked first, with the top 5 retrieved:
+
+| Question | Expected | Rank found | Top 5 retrieved |
+|----------|----------|-----------|-----------------|
+| q04: can the maximum trial period durations be changed by agreement or contract | `L1221-22` | 3 | L1221-21 (0.874), L1221-19 (0.862), **L1221-22 (0.857)**, L1221-23 (0.854), L3141-10 (0.842) |
+| q06: "Chez KFC, la période d'essai est-elle obligatoire ?" | `L1221-23` | 2 | L1221-21 (0.831), **L1221-23 (0.828)**, L1221-22 (0.826), L1221-26 (0.825), L1221-25 (0.817) |
+| q07: "la période d'essai, c'est la période pendant laquelle le salarié essaie l'entreprise ?" | `L1221-20` | 2 | L1221-26 (0.856), **L1221-20 (0.855)**, L1221-21 (0.848), L1221-24 (0.842), L1221-25 (0.840) |
+| q08: "la période d'essai, c'est un jour férié ?" | `L1221-20` | none | L1221-26 (0.828), L1221-21 (0.819), L1221-25 (0.816), L1221-22 (0.815), L1221-23 (0.811) |
+| q09: manager refusing a day off (English) | `L3141-1`, `L3141-12` | 2 | L3141-6 (0.803), **L3141-12 (0.801)**, L1221-23 (0.791), L3141-2 (0.790), **L3141-1 (0.788)** |
+| q14: new employee getting 2 leave days per month vs a 7-year colleague | `L3141-3`, `L3141-10` | 2 | L3141-4 (0.843), **L3141-3 (0.841)**, L3141-2 (0.839), L3141-7 (0.834), L1221-23 (0.833) |
+
+Observations:
+
+- **Recall improves, precision at rank 1 does not.** Hit rate @3 and @5 rise to 0.909 (10 of 11 questions have the expected article in the top 3), but hit rate @1 drops from 0.545 to 0.455 and MRR is nearly flat (0.655 to 0.667).
+- **Fixed by the new model:** q05 is now ranked first, q06 moves from rank 5 to 2, q07 from none to 2.
+- **Newly missed at rank 1:** q04 (rank 3) and q14 (rank 2) were rank 1 with e5-small.
+- **Still failing:** q08 ("jour férié") is not retrieved in the top 5, and the score gaps stay tiny (0.00 to 0.03 between ranks 1 and 2), so ordering within a topic is still fragile.
+- **Cross-topic noise appears:** `L1221-23` shows up in the top 5 of q09 and q14, which are paid-leave questions.
+- On 11 questions, the @1 drop is one question (0.545 is 6/11, 0.455 is 5/11), so it is not strong evidence either way.
 
 ## Project structure
 
