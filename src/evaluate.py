@@ -37,7 +37,10 @@ def main():
         rank = first_hit_rank(retrieved_articles, q["expected_articles"])
         ranks.append(rank)
         if rank != 1:
-            print(f"{q['id']}: expected {q['expected_articles']}, got rank {rank}")
+            print(f"\n{q['id']}: {q['question']}")
+            print(f"  expected {q['expected_articles']}, got rank {rank}")
+            for i, (chunk_id, score) in enumerate(results, start=1):
+                print(f"  {i}. {chunk_to_article[chunk_id]}  ({score:.3f})")
 
     # TODO: compute and print
     #   hit rate @1, @3, @5: fraction of ranks that are not None and <= k
