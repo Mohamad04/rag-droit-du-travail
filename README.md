@@ -41,8 +41,9 @@ Understand every step of a RAG pipeline by implementing it myself, then measure 
 Current configuration:
 
 - **Chunking v1:** one chunk per article, prefixed with `Article <id>:`.
-- **Embedding model:** `intfloat/multilingual-e5-base` (V2; V1 used `multilingual-e5-small`), with the `passage: ` prefix for documents and `query: ` for questions, normalized embeddings.
+- **Embedding model:** `intfloat/multilingual-e5-small`, with the `passage: ` prefix for documents and `query: ` for questions, normalized embeddings. (V2 tested `multilingual-e5-base`; switch `MODEL_NAME` in `src/build_index.py` and rebuild the index to use it.)
 - **Search:** cosine similarity (dot product of normalized vectors) over a NumPy matrix, top 5.
+- **Reranking (optional, `use_reranker=True`):** the top `n_candidates=20` chunks are re-scored by the cross-encoder `cross-encoder/mmarco-mMiniLMv2-L12-H384-v1`, and the best 5 are kept. `src/evaluate.py` currently runs with `USE_RERANKER = True`.
 
 ## Results
 
@@ -119,8 +120,12 @@ Retrieval keeps `multilingual-e5-small` with chunking v1. The top 20 candidates 
 
 Observations:
 
+- **Biggest win:** q07 and q08 are now ranked first. No earlier setup could do this (q08 was not even in the top 5 with either embedding model). This is the clearest evidence that the cross-encoder captures the intent of the question better than embedding similarity.
+- **New failure mode: wrong-topic articles.** The reranker brings articles from the wrong topic into the results: `L1221-25` and `L1221-26`, both trial-period articles, appear in the top 3 of q09 and q14, which are about paid leave. This is also why q04, q09 and q14 got worse.
+- **Why:** with `n_candidates=20` and only 20 chunks in the corpus, every article is a candidate, so the first stage filters nothing and the reranker alone decides, topic included. The reranker only helps with ordering when the vector search has already narrowed the field.
+- **Next experiment:** reduce `n_candidates` (for example 5 or 10), so that vector search acts as a topic filter before reranking, and compare against this table.
 - The reranker gives the best Hit@3, Hit@5 and MRR of the three setups, with the expected article in the top 5 for all 11 questions.
-- Hit@1 is unchanged from V1 (0.545), so the gain is in getting the right article into the top ranks, not in always placing it first.
+- Hit@1 is unchanged from V1 (0.545), so the overall gain is in getting the right article into the top ranks, not in always placing it first.
 - It beats the larger embedding model (V2) on MRR (0.735 vs 0.667) without changing the index, at the cost of one cross-encoder call per candidate at query time.
 - Same caveat as before: 11 questions, so one question is about 9 points.
 
