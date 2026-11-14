@@ -107,6 +107,23 @@ Observations:
 - **Cross-topic noise appears:** `L1221-23` shows up in the top 5 of q09 and q14, which are paid-leave questions.
 - On 11 questions, the @1 drop is one question (0.545 is 6/11, 0.455 is 5/11), so it is not strong evidence either way.
 
+### V3 (e5-small + reranker)
+
+Retrieval keeps `multilingual-e5-small` with chunking v1. The top 20 candidates from vector search are re-scored by the cross-encoder `cross-encoder/mmarco-mMiniLMv2-L12-H384-v1`, and the best 5 are kept.
+
+| Setup | Hit@1 | Hit@3 | Hit@5 | MRR |
+|-------|-------|-------|-------|-----|
+| e5-small (V1) | 0.545 | 0.727 | 0.818 | 0.655 |
+| e5-base (V2) | 0.455 | 0.909 | 0.909 | 0.667 |
+| e5-small + reranker (V3) | 0.545 | 0.909 | 1.000 | 0.735 |
+
+Observations:
+
+- The reranker gives the best Hit@3, Hit@5 and MRR of the three setups, with the expected article in the top 5 for all 11 questions.
+- Hit@1 is unchanged from V1 (0.545), so the gain is in getting the right article into the top ranks, not in always placing it first.
+- It beats the larger embedding model (V2) on MRR (0.735 vs 0.667) without changing the index, at the cost of one cross-encoder call per candidate at query time.
+- Same caveat as before: 11 questions, so one question is about 9 points.
+
 ## Project structure
 
 ```
