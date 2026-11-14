@@ -5,7 +5,7 @@ from build_index import CHUNKS_PATH
 from search import search
 
 QUESTIONS_PATH = Path("eval/questions.jsonl")
-USE_RERANKER = True
+USE_RERANKER = False
 K = 5
 
 
