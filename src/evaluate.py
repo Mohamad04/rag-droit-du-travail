@@ -6,6 +6,8 @@ from search import search
 
 QUESTIONS_PATH = Path("eval/questions.jsonl")
 USE_RERANKER = True
+N_CANDIDATES = 5
+
 K = 5
 
 
@@ -33,7 +35,7 @@ def main():
 
     ranks = []
     for q in questions:
-        results = search(q["question"], k=K, use_reranker= USE_RERANKER)
+        results = search(q["question"], k=K, use_reranker=USE_RERANKER,n_candidates=N_CANDIDATES)
         retrieved_articles = [chunk_to_article[chunk_id] for chunk_id, _ in results]
         rank = first_hit_rank(retrieved_articles, q["expected_articles"])
         ranks.append(rank)
@@ -43,9 +45,6 @@ def main():
             for i, (chunk_id, score) in enumerate(results, start=1):
                 print(f"  {i}. {chunk_to_article[chunk_id]}  ({score:.3f})")
 
-    # TODO: compute and print
-    #   hit rate @1, @3, @5: fraction of ranks that are not None and <= k
-    #   MRR: average of 1/rank, counting 0 when rank is None
     n = len(ranks)
     for k in [1, 3, 5]:
         hit = sum(1 for r in ranks if r is not None and r <= k) / n
