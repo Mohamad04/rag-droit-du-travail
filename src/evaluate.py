@@ -1,10 +1,12 @@
 from pathlib import Path
 
 from build_chunks import load_corpus
+from build_index import CHUNKS_PATH
 from search import search
 
 QUESTIONS_PATH = Path("eval/questions.jsonl")
 CHUNKS_PATH = Path("data/chunks_v1.jsonl")
+USE_RERANKER = True
 K = 5
 
 
@@ -32,7 +34,7 @@ def main():
 
     ranks = []
     for q in questions:
-        results = search(q["question"], k=K)
+        results = search(q["question"], k=K, use_reranker= True)
         retrieved_articles = [chunk_to_article[chunk_id] for chunk_id, _ in results]
         rank = first_hit_rank(retrieved_articles, q["expected_articles"])
         ranks.append(rank)

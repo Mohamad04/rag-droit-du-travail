@@ -7,8 +7,8 @@ from sentence_transformers import SentenceTransformer
 from build_chunks import load_corpus
 
 # --- Configuration ---
-#MODEL_NAME = "intfloat/multilingual-e5-small" """Model v1"""
-MODEL_NAME = "intfloat/multilingual-e5-base" #Model v2
+MODEL_NAME = "intfloat/multilingual-e5-small" #Model v1
+#MODEL_NAME = "intfloat/multilingual-e5-base" #Model v2
 MODEL_SHORT = MODEL_NAME.split("/")[-1] 
 STRATEGY = "v1"
 
