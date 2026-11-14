@@ -6,7 +6,7 @@ from search import search
 
 QUESTIONS_PATH = Path("eval/questions.jsonl")
 USE_RERANKER = True
-N_CANDIDATES = 5
+N_CANDIDATES = 10
 
 K = 5
 
@@ -30,6 +30,7 @@ def all_hit_ranks(retrieved_articles, expected_articles):
 
 
 def main():
+    print(f"Reranker: {USE_RERANKER}, candidates: {N_CANDIDATES}, k: {K}")
     chunk_to_article = {c["chunk_id"]: c["article_id"] for c in load_corpus(CHUNKS_PATH)}
     questions = [q for q in load_corpus(QUESTIONS_PATH) if q["expected_articles"]]
 
