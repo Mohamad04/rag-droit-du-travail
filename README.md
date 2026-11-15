@@ -123,7 +123,6 @@ Observations:
 - **Biggest win:** q07 and q08 are now ranked first. No earlier setup could do this (q08 was not even in the top 5 with either embedding model). This is the clearest evidence that the cross-encoder captures the intent of the question better than embedding similarity.
 - **New failure mode: wrong-topic articles.** The reranker brings articles from the wrong topic into the results: `L1221-25` and `L1221-26`, both trial-period articles, appear in the top 3 of q09 and q14, which are about paid leave. This is also why q04, q09 and q14 got worse.
 - **Why:** with `n_candidates=20` and only 20 chunks in the corpus, every article is a candidate, so the first stage filters nothing and the reranker alone decides, topic included. Hypothesis: the reranker helps with ordering only when the vector search has already narrowed the field. This is tested in V4.
-- **Follow-up:** the effect of reducing `n_candidates` is measured in V4.
 - The reranker gives the best Hit@3, Hit@5 and MRR of the three setups, with the expected article in the top 5 for all 11 questions.
 - Hit@1 is unchanged from V1 (0.545), so the overall gain is in getting the right article into the top ranks, not in always placing it first.
 - It beats the larger embedding model (V2) on MRR (0.735 vs 0.667) without changing the index, at the cost of one cross-encoder call per candidate at query time.

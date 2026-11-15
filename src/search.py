@@ -32,7 +32,7 @@ def rerank_candidates(question, candidate_ids, k):
     return [(chunk_id, float(score)) for chunk_id, score in ranked[:k]]
 
 
-def search(question, k=5, use_reranker=False, n_candidates=20):
+def search(question, k=5, use_reranker=False, n_candidates=10):
     query_vector = model.encode(f"query: {question}", normalize_embeddings=True)
     scores = embeddings @ query_vector
     top_n = np.argsort(scores)[::-1][:n_candidates]

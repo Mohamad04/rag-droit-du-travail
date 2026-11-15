@@ -6,7 +6,7 @@ from search import search
 
 QUESTIONS_PATH = Path("eval/questions.jsonl")
 USE_RERANKER = True
-N_CANDIDATES = 10
+N_CANDIDATES = 5
 
 K = 5
 
