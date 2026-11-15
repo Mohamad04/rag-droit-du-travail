@@ -118,6 +118,12 @@ Retrieval keeps `multilingual-e5-small` with chunking v1. The top 20 candidates 
 | e5-base (V2) | 0.455 | 0.909 | 0.909 | 0.667 |
 | e5-small + reranker (V3) | 0.545 | 0.909 | 1.000 | 0.735 |
 
+| n_candidates | Hit@1 | Hit@3 | Hit@5 | MRR |
+|--------------|-------|-------|-------|-----|
+| 20 (V3) | 0.545 | 0.909 | 1.000 | 0.735 |
+| 10 | 0.545 | 1.000 | 1.000 | 0.758 | 
+| 5 | 0.455 | 0.818 | 0.818 | 0.621 |
+
 Observations:
 
 - **Biggest win:** q07 and q08 are now ranked first. No earlier setup could do this (q08 was not even in the top 5 with either embedding model). This is the clearest evidence that the cross-encoder captures the intent of the question better than embedding similarity.
