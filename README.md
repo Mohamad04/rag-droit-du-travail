@@ -23,7 +23,7 @@ Understand every step of a RAG pipeline by implementing it myself, then measure 
 2. Chunking (size and overlap studied as parameters): v1 done, other strategies to come
 3. Embeddings with `sentence-transformers` ✅ (`multilingual-e5-small`, then `multilingual-e5-base`)
 4. Vector search: NumPy cosine similarity ✅, then FAISS
-5. Generation with a local LLM (Ollama), with source citations
+5. Generation with an LLM (OpenAI, then a local model with Ollama), with source citations
 6. Evaluation: hit rate and MRR on the evaluation set ✅ (baseline recorded below)
 7. Comparison with a LangChain implementation
 
