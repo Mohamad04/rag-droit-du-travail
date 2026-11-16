@@ -2,7 +2,7 @@
 
 A retrieval-augmented generation (RAG) system that answers questions about French labor law, **built from scratch without frameworks** and **evaluated with retrieval metrics**.
 
-> Status: work in progress. Retrieval and evaluation work; generation is not implemented yet.
+> Status: work in progress. Retrieval, evaluation and a first generation step (OpenAI) work. In progress: answering in the language of the question, evaluating the generated answers, and adding a local model (Ollama).
 
 ## Goal
 
